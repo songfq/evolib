@@ -123,6 +123,7 @@
 | 状态管理 | Pinia | 2.x | Vue 3 官方推荐，TypeScript 友好，轻量替代 Vuex |
 | HTTP 客户端 | Axios | 1.x | 拦截器机制天然适配 JWT 注入 + 401 统一处理 |
 | CSS 方案 | Scoped CSS + CSS 变量 | — | 组件样式隔离（`<style scoped>`），全局主题变量（`theme.css`） |
+| UI 组件库 | 自研（MVP） | — | 可选 Element Plus（Phase 2），自研轻量、无额外依赖 |
 | 图标 | 内联 SVG 组件 | — | 不引入图标库，减少依赖 |
 | Node.js | 最低 18.x | 18+ | Vite 5 运行时要求 |
 
@@ -644,19 +645,19 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',   // 后端 Spring Boot
+        target: process.env.VITE_API_TARGET || 'http://localhost:8080',  // 默认开发环境，可由环境变量覆盖
         changeOrigin: true,
       },
     },
   },
   build: {
-    outDir: '../evolib-backend/src/main/resources/static',  // 构建产物直接输出到后端 static/
+    outDir: path.resolve(__dirname, '../evolib-backend/src/main/resources/static'),  // 构建产物输出到后端 static/
     emptyOutDir: true,
   },
 });
 ```
 
-> **关键设计**：`vite build` 的输出目录直接指向后端 `static/`，Phase 1 部署时只需一个 JAR 包即可同时服务前端静态文件和 REST API。Phase 2 前后端独立部署时，只需修改 `vite.config.js` 中的 `outDir` 和 `server.proxy.target`。
+> **关键设计**：`vite build` 的输出目录通过 `path.resolve(__dirname, ...)` 解析为绝对路径，避免工作目录不一致导致输出目录错误；`proxy.target` 通过环境变量 `VITE_API_TARGET` 可配置，避免开发/生产/团队环境硬编码后端地址。Phase 1 部署时产物直接落到后端 `static/`，只需一个 JAR 包即可同时服务前端和 REST API。
 
 ### 4.9 页面示例：`BorrowView.vue`（馆员借书操作台）
 
@@ -929,6 +930,7 @@ Controller 抛出异常
 | 4003 | 无库存 | "图书可借数量不足" |
 | 4004 | 读者不存在 | "读者不存在，请检查借阅证号" |
 | 4005 | 图书不存在 | "图书不存在，请检查 ISBN" |
+| 4007 | 读者 ID 或 ISBN 格式不合法 | "读者ID或ISBN格式不合法" |
 | 4009 | 重复借阅 | "该读者已借阅此书" |
 
 ---
@@ -971,10 +973,12 @@ CREATE TABLE readers (
 );
 
 -- 6.3 借阅记录表
+-- 注：无 FOREIGN KEY 约束，reader_id / isbn 的关联完整性由应用层 Service 校验。
+--      参见 ADR-006：数据库层不建外键，为后续微服务跨库拆分预留空间。
 CREATE TABLE borrow_records (
     id           BIGSERIAL    PRIMARY KEY,
-    reader_id    VARCHAR(20)  NOT NULL REFERENCES readers(reader_id),
-    isbn         VARCHAR(20)  NOT NULL REFERENCES books(isbn),
+    reader_id    VARCHAR(20)  NOT NULL,   -- 应用层：借书前校验读者存在性
+    isbn         VARCHAR(20)  NOT NULL,   -- 应用层：借书前校验图书存在性
     borrow_date  DATE         NOT NULL,
     due_date     DATE         NOT NULL,
     return_date  DATE,
@@ -1000,6 +1004,20 @@ CREATE TABLE audit_logs (
 CREATE INDEX idx_audit_created  ON audit_logs (created_at);
 CREATE INDEX idx_audit_operator ON audit_logs (operator_id);
 ```
+
+### 6.5 关联完整性：应用层校验机制
+
+由于 MVP 阶段明确**不使用数据库外键约束**，`borrow_records.reader_id` 与 `borrow_records.isbn` 的合法性统一在 Service 层校验：
+
+| 写入操作 | 应用层校验点 | 不通过返回 |
+| --- | --- | --- |
+| 新增借阅记录 | `BorrowService` 先 `SELECT` 校验 `readers.reader_id` 存在性 | `BusinessException(4004)` |
+| 新增借阅记录 | `BorrowService` 先 `SELECT` 校验 `books.isbn` 存在性 | `BusinessException(4005)` |
+| 还书 | `BorrowService` 校验该 `(reader_id, isbn)` 是否存在未还的借阅记录 | `BusinessException(4006)` |
+| 下架图书 | `AdminService` 校验该 `isbn` 是否还有 `status='BORROWED'` 的记录 | `BusinessException(4008)` 或业务提示「请先归还全部在借图书」 |
+| 重置密码 | `AdminService` 校验 `readers.reader_id` 存在性 | `BusinessException(4004)` |
+
+> 此设计配合 ADR-006：物理外键在微服务拆分时会成为跨库障碍，且应用层校验可返回更精确的中文业务错误码（UI-04 要求）。
 
 ---
 
@@ -1280,4 +1298,24 @@ Phase 1 (MVP)              Phase 2 (优化)            Phase 3 (服务化)      
 
 ---
 
+### ADR-006：数据库层不建外键约束，关联完整性由应用层统一校验
+
+- **决策**：所有表不创建 `FOREIGN KEY` 约束。`borrow_records.reader_id` / `isbn` 等关联字段通过 Service 层显式校验存在性（参见 6.5 节）。
+- **理由**：
+  1. **微服务演进**：Phase 3 拆分后，`readers` 与 `books` 可能位于不同数据库实例，物理外键无法跨库生效。提前移除外键，避免拆分前清理大量级联约束。
+  2. **业务错误码精确**：数据库外键违反通常返回统一的 DB 错误，难以映射为 `4004` / `4005` 这样的中文业务提示；应用层校验可直接抛出 `BusinessException(4004/4005)`，满足 UI-04 的友好提示要求。
+  3. **避免级联副作用**：数据库级联删除/更新可能导致非预期数据变化（如误删图书时连带影响历史借阅记录）。应用层控制可显式处理：图书下架仅标记 `is_active=false`，不影响历史记录。
+- **实现要点**：
+  - 所有写入 `borrow_records` 的地方必须前置 `SELECT` 校验 `reader_id` 和 `isbn` 存在性。
+  - 所有依赖读者/图书存在性的操作（还书、重置密码、下架）在 Service 中显式校验。
+  - 单元测试必须覆盖「关联不存在」的异常分支。
+- **后果**：
+  - ✅ 微服务跨库拆分无障碍。
+  - ✅ 错误提示可控、用户友好。
+  - ⚠️ 开发时需确保所有写入点都校验关联存在性；建议通过代码审查 + 单元测试覆盖，避免遗漏。
+
+---
+
 > 本文档为架构设计初稿，需经技术评审通过后作为开发实施依据。项目分为两个独立工程目录：`evolib-frontend/`（Vue 3 + Vite）和 `evolib-backend/`（Spring Boot 2.7.18 + Maven），共用同一个 GitHub 仓库。
+
+---
