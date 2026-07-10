@@ -227,3 +227,17 @@ library:
 2. `mvn spring-boot:run` 启动成功，输出 `Started EvolibApplication`
 3. 浏览器访问 `http://localhost:8080` 返回 404（暂无接口，正常）
 4. 生成的包结构与上方目录树**完全一致**，无缺漏目录
+
+---
+
+## 在 IDEA 中打开项目
+
+> IDEA 通过 `pom.xml` 识别 Maven 工程，会自动下载依赖、配置 JDK、创建运行配置。
+
+1. **打开项目**：`File → Open → 选择 evolib-backend/pom.xml → Open as Project`
+2. **等待 Maven 依赖下载**：右下角进度条跑完（首次约 2~3 分钟）
+3. **配置 JDK**：`File → Project Structure → Project → SDK → 选择 1.8`
+4. **启动**：在左侧项目树中找到 `EvolibApplication.java` → 右键 → `Run 'EvolibApplication'`
+5. 控制台输出 `Started EvolibApplication` 表示启动成功
+
+> 后续日常开发只需按绿色三角按钮（IDEA 自动记住了运行配置）。不需要手工敲 `mvn` 命令。

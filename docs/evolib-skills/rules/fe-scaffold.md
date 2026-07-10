@@ -238,3 +238,25 @@ export default router;
 2. `npm run dev` 启动成功，浏览器打开 `http://localhost:3000` 显示 Vite 默认页
 3. 引入 Element Plus 后，在 `App.vue` 中写 `<el-button>测试</el-button>` 可正常渲染蓝色按钮
 4. 生成的目录结构与上方**完全一致**，无缺漏目录
+
+---
+
+## 在 IDE 中打开项目
+
+开发时不需要用 `scripts/dev.sh`（那个是纯命令行的备用方案）。直接用 IDE 更直观：
+
+### VS Code（推荐）
+
+1. 打开终端：进入 `evolib-frontend` 目录 → `code .`
+2. **安装 Volar 插件**（Vue 3 语法高亮）：`Ctrl+Shift+X` → 搜索 `Vue - Official` → 安装
+3. **启动**：`` Ctrl+`  `` 打开内置终端 → `npm run dev`
+4. 浏览器打开 `http://localhost:3000`
+
+> VS Code 的终端本质上就是 PowerShell，你可以用 `npm install`、`npm run dev` 等所有 npm 命令。
+
+### HBuilderX
+
+1. **导入项目**：`文件 → 导入 → 从本地目录导入` → 选择 `evolib-frontend` 目录
+2. **首次安装依赖**：在 HBuilderX 底部终端中运行 `npm install`
+3. **启动**：`运行 → 运行到浏览器 → Chrome`
+4. 或者直接在底部终端输入 `npm run dev`，浏览器打开 `http://localhost:3000`

@@ -1,5 +1,9 @@
 #!/bin/bash
-# dev.sh — EvoLib 开发环境启动脚本
+# dev.sh — EvoLib 开发环境启动脚本（可选）
+# 
+# 如果你用 IDEA 启动后端 + VS Code/HBuilderX 启动前端，不需要此脚本。
+# 此脚本是纯命令行的备用方案——在同一个 Git Bash 窗口同时启动前后端。
+#
 # 用法：bash dev.sh
 # 说明：启动后端（Spring Boot）和前端（Vite HMR），前端 /api 请求自动代理到后端
 
