@@ -1,0 +1,82 @@
+// 文件位置: src/test/java/com/evolib/module/{域}/service/impl/XxxServiceImplTest.java
+// 使用方式: 复制此文件 → 替换 {{className}} / {{serviceName}} / {{mapperName}}
+
+package com.evolib.module.{{moduleName}}.service.impl;
+
+import com.evolib.common.BusinessException;
+import com.evolib.common.ErrorCode;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Request;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Response;
+import com.evolib.module.{{moduleName}}.entity.{{entityName}};
+import com.evolib.module.{{moduleName}}.mapper.{{mapperName}}Mapper;
+import com.evolib.module.audit.service.AuditService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+/**
+ * {{className}}ServiceImpl 单元测试
+ * 
+ * 测试策略：Mock 所有 Mapper，验证 Service 业务逻辑正确性。
+ * 不连真实数据库 — 数据库操作的正确性由集成测试保证。
+ */
+@ExtendWith(MockitoExtension.class)                // ★ 启用 Mockito
+class {{className}}ServiceImplTest {
+
+    @Mock
+    private {{mapperName}}Mapper {{instanceName}}Mapper;
+
+    @Mock
+    private AuditService auditService;
+
+    @InjectMocks                                      // ★ 将 Mock 注入被测对象
+    private {{className}}ServiceImpl {{instanceName}}Service;
+
+    // ==================== 正常路径 ====================
+
+    @Test
+    @DisplayName("正常场景 — 应返回成功响应")
+    void shouldReturnSuccess_when_ValidInput() {
+        // 1. Arrange — 准备数据 + Mock 行为
+        {{className}}Request request = new {{className}}Request();
+        // request.setXxx("test");
+
+        // 2. Act — 执行被测方法
+        {{className}}Response response = {{instanceName}}Service.create(request);
+
+        // 3. Assert — 验证结果 + 验证 Mapper 调用了 insert
+        assertNotNull(response);
+        verify({{instanceName}}Mapper).insert(any());
+    }
+
+    // ==================== 异常路径 ====================
+
+    @Test
+    @DisplayName("参数为空 — 应抛出 4007 异常")
+    void shouldThrowInvalidParam_when_RequestIsNull() {
+        BusinessException ex = assertThrows(BusinessException.class, () -> {
+            {{instanceName}}Service.create(null);
+        });
+        assertEquals(4007, ex.getErrorCode().getCode());
+    }
+
+    @Test
+    @DisplayName("ID 不存在 — 应抛出 4004 异常")
+    void shouldThrowNotFound_when_IdNotExist() {
+        when({{instanceName}}Mapper.selectById("NOT_EXIST")).thenReturn(null);
+
+        BusinessException ex = assertThrows(BusinessException.class, () -> {
+            {{instanceName}}Service.getById("NOT_EXIST");
+        });
+        assertEquals(4004, ex.getErrorCode().getCode());  // READER_NOT_FOUND — 按需替换
+    }
+
+    // TODO: 补充其他分支测试（参考 rules/unit-test.md 的三段式模板）
+}

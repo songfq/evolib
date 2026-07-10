@@ -1,0 +1,25 @@
+-- ============================================
+-- EvoLib DDL 模板
+-- 数据库：evolib | 引擎：PostgreSQL 14+
+-- 使用方式：替换 {{tableName}} / 字段 / 索引 / CHECK 约束
+-- ============================================
+
+-- {{表中文名}}
+CREATE TABLE {{tableName}} (
+    id           BIGSERIAL    PRIMARY KEY,     -- 自增主键（PostgreSQL BIGSERIAL = 自增 + BIGINT）
+    -- TODO: 补充业务字段
+
+    created_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
+-- 索引（按 NFR-04 要求，搜索字段 + 关联字段必须建索引）
+-- CREATE INDEX idx_{{缩写}}_{{字段}} ON {{tableName}} ({{字段}});
+
+-- ============================================
+-- 命名规范提示：
+--   表名：全小写 + 下划线 + 复数（books, readers, borrow_records）
+--   字段：全小写 + 下划线（reader_id, created_at）
+--   索引：idx_{表缩写}_{字段}（idx_books_title）
+--   禁止：FOREIGN KEY / REFERENCES（关联校验由应用层 Service 完成）
+-- ============================================

@@ -1,0 +1,47 @@
+// 文件位置: module/{域}/service/XxxService.java
+// 使用方式: 复制此文件 → 替换 {{className}} / {{requestType}} / {{responseType}}
+
+package com.evolib.module.{{moduleName}}.service;
+
+import com.evolib.common.PageResult;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Request;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Response;
+
+/**
+ * {{功能描述}} Service 接口
+ * 
+ * 定义业务操作契约，实现类在 impl/ 包下。
+ * 跨模块调用只能通过此接口，不能直接依赖 impl 实现类。
+ */
+public interface {{className}}Service {
+
+    /**
+     * 新增
+     * @param request {{请求参数说明}}
+     * @return {{返回值说明}}
+     */
+    {{className}}Response create({{className}}Request request);
+
+    /**
+     * 搜索
+     * @param keyword 搜索关键词
+     * @param page 页码（从 1 开始）
+     * @param size 每页条数
+     */
+    PageResult<{{className}}Response> search(String keyword, int page, int size);
+
+    /**
+     * 按 ID 查询
+     */
+    {{className}}Response getById(String id);
+
+    /**
+     * 更新
+     */
+    {{className}}Response update(String id, {{className}}Request request);
+
+    /**
+     * 删除
+     */
+    void delete(String id);
+}

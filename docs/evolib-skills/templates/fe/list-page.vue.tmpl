@@ -1,0 +1,115 @@
+<!--
+  模板：列表搜索页（模板 A）
+  适用：P-02 图书检索 / P-07 在借清单
+  用法：复制此文件到 src/views/{角色}/XxxView.vue → 替换 {{pageName}} / {{apiPath}} / {{columns}}
+-->
+
+<script setup>
+import { ref } from 'vue';
+import { ElMessage } from 'element-plus';       // 消息提示（成功/错误/警告）
+import { api } from '@/utils/api';              // Axios 封装（自动注入 JWT token）
+
+// ---- 响应式状态 ----
+const keyword   = ref('');                       // v-model 绑定搜索框
+const tableData = ref([]);                       // 表格数据
+const loading   = ref(false);                    // 加载状态
+const total     = ref(0);                        // 总记录数
+const page      = ref(1);                        // 当前页码
+const pageSize  = 10;
+
+// ---- 表格列定义 ----
+const columns = [
+  // 按 SRS §8 的页面描述定义列
+];
+
+// ---- 业务方法 ----
+async function doSearch() {
+  // 前端基本校验
+  if (!keyword.value.trim()) {
+    ElMessage.warning('请输入搜索关键词');
+    return;
+  }
+
+  loading.value = true;
+  try {
+    // 原理：Axios 自动将对象转为 Query String: ?keyword=xxx&page=1&size=10
+    const resp = await api.get('/api/v1/{{apiPath}}/search', {
+      params: { keyword: keyword.value, page: page.value, size: pageSize }
+    });
+    // resp 已经是解包后的 { code, data, message }，无需 resp.data.data
+    if (resp.code === 0) {
+      tableData.value = resp.data.list || [];
+      total.value = resp.data.total || 0;
+    } else {
+      ElMessage.error(resp.message);             // 直接显示后端的中文错误
+    }
+  } catch (err) {
+    ElMessage.error('网络异常，请稍后重试');
+  } finally {
+    loading.value = false;                       // ★ 无论成功失败都要关闭 loading
+  }
+}
+
+// 页码变化 → 重新搜索
+function onPageChange(newPage) {
+  page.value = newPage;
+  doSearch();
+}
+
+// 查看详情 → 跳转到详情页
+function goDetail(id) {
+  // router.push(`/reader/detail/${id}`);
+}
+</script>
+
+<template>
+  <el-container>
+    <el-header height="56px">
+      <h2>{{pageName}}</h2>
+    </el-header>
+    <el-main>
+      <!-- 搜索条件 — Element Plus 输入框 + 按钮 -->
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <el-input
+          v-model="keyword"
+          placeholder="请输入搜索关键词"
+          style="width: 400px;"
+          @keyup.enter="doSearch"             <!-- 按回车也能搜索 -->
+        />
+        <el-button type="primary" @click="doSearch">搜索</el-button>
+      </div>
+
+      <!-- 结果表格 — Element Plus 表格 + loading 动画 -->
+      <el-table :data="tableData" v-loading="loading" border stripe>
+        <el-table-column prop="title"  label="书名" />
+        <el-table-column prop="author" label="作者" width="180" />
+        <el-table-column prop="isbn"   label="ISBN"  width="200" />
+        <el-table-column label="操作" width="100">
+          <template #default="{ row }">
+            <el-button type="primary" link @click="goDetail(row.isbn)">查看详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页 — Element Plus 分页组件 -->
+      <el-pagination
+        v-if="total > 0"
+        :current-page="page"
+        :page-size="pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
+        @current-change="onPageChange"
+        style="margin-top: 16px; justify-content: center;"
+      />
+    </el-main>
+  </el-container>
+</template>
+
+<style scoped>
+.el-header {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-container);
+  border-bottom: 1px solid var(--color-border);
+}
+</style>

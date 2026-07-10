@@ -1,0 +1,94 @@
+// 文件位置: module/{域}/controller/XxxController.java
+// 使用方式: 复制此文件 → 替换 {{className}} / {{path}} / {{role}}
+
+package com.evolib.module.{{moduleName}}.controller;
+
+import com.evolib.common.Result;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Request;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Response;
+import com.evolib.module.{{moduleName}}.service.{{className}}Service;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+/**
+ * {{功能描述}} Controller
+ * 
+ * 职责：接收 HTTP 请求 → 参数校验 → 调用 Service → 封装 Result 返回
+ * 注意：Controller 不包含任何业务逻辑，所有判断都在 Service 中
+ */
+@RestController
+@RequestMapping("/api/v1/{{pathPrefix}}")
+@RequiredArgsConstructor
+@Slf4j
+public class {{className}}Controller {
+
+    private final {{className}}Service {{instanceName}}Service;
+
+    /**
+     * {{接口功能描述}}
+     * POST /api/v1/{{pathPrefix}}
+     */
+    @PostMapping
+    @PreAuthorize("hasRole('{{role}}')")
+    public Result<{{className}}Response> create(@RequestBody @Valid {{className}}Request request) {
+        log.info("{{功能}}请求: {}", request);
+        {{className}}Response response = {{instanceName}}Service.create(request);
+        return Result.ok(response);
+    }
+
+    /**
+     * 查询列表
+     * GET /api/v1/{{pathPrefix}}/search
+     */
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('{{role}}')")
+    public Result<PageResult<{{className}}Response>> search(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        log.info("{{功能}}搜索: keyword={}, page={}", keyword, page);
+        PageResult<{{className}}Response> result = {{instanceName}}Service.search(keyword, page, size);
+        return Result.ok(result);
+    }
+
+    /**
+     * 查询详情
+     * GET /api/v1/{{pathPrefix}}/{id}
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('{{role}}')")
+    public Result<{{className}}Response> detail(@PathVariable String id) {
+        log.info("{{功能}}详情: id={}", id);
+        {{className}}Response response = {{instanceName}}Service.getById(id);
+        return Result.ok(response);
+    }
+
+    /**
+     * 更新
+     * PUT /api/v1/{{pathPrefix}}/{id}
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('{{role}}')")
+    public Result<{{className}}Response> update(@PathVariable String id,
+                                                  @RequestBody @Valid {{className}}Request request) {
+        log.info("{{功能}}更新: id={}", id);
+        {{className}}Response response = {{instanceName}}Service.update(id, request);
+        return Result.ok(response);
+    }
+
+    /**
+     * 删除
+     * DELETE /api/v1/{{pathPrefix}}/{id}
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('{{role}}')")
+    public Result<Void> delete(@PathVariable String id) {
+        log.info("{{功能}}删除: id={}", id);
+        {{instanceName}}Service.delete(id);
+        return Result.ok(null);
+    }
+}

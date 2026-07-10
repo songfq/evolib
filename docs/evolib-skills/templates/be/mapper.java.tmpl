@@ -1,0 +1,30 @@
+// 文件位置: module/{域}/mapper/XxxMapper.java
+// 使用方式: 复制此文件 → 替换 {{entityName}} / {{tableName}}
+
+package com.evolib.module.{{moduleName}}.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.evolib.module.{{moduleName}}.entity.{{entityName}};
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+ * {{entityName}} Mapper
+ * 
+ * 继承 MyBatis-Plus BaseMapper 后自动获得以下内置方法（无需手写 SQL）：
+ *   insert(entity)          — 新增记录
+ *   selectById(id)          — 按主键查单条
+ *   selectList(wrapper)     — 条件查列表
+ *   selectPage(page, wrapper) — 分页查询
+ *   updateById(entity)      — 按主键更新
+ *   deleteById(id)          — 按主键删除
+ * 
+ * 仅当内置方法无法满足时，才在此写自定义 @Select / @Update SQL。
+ * 复杂 SQL 禁止写 XML——改用 LambdaQueryWrapper 链式调用。
+ */
+@Mapper
+public interface {{entityName}}Mapper extends BaseMapper<{{entityName}}> {
+    
+    // 示例：自定义查询
+    // @Select("SELECT * FROM {{tableName}} WHERE status = #{status}")
+    // List<{{entityName}}> findByStatus(@Param("status") String status);
+}

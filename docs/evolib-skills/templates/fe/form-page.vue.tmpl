@@ -1,0 +1,81 @@
+<!--
+  模板：表单提交页（模板 B）
+  适用：P-01 登录 / P-04 借书 / P-05 还书 / P-06 注册 / P-08 上架 / P-09 下架 / P-10 重置密码
+  用法：复制此文件到 src/views/{角色}/XxxView.vue → 替换 {{pageName}} / {{apiPath}} / {{formFields}}
+-->
+
+<script setup>
+import { ref, reactive } from 'vue';
+import { ElMessage } from 'element-plus';
+import { api } from '@/utils/api';
+
+// ---- 响应式状态 ----
+const loading = ref(false);
+const formRef = ref(null);                    // el-form 引用，用于触发校验
+
+// 表单数据 — reactive 适合对象（ref 适合单值）
+const form = reactive({
+  // TODO: 按 SRS §8 页面描述填写字段
+});
+
+// Element Plus 表单校验规则
+const rules = {
+  // TODO: 每个字段的必填/格式校验
+};
+
+// ---- 业务方法 ----
+async function doSubmit() {
+  // 触发 Element Plus 表单校验 → 校验不通过自动显示红色提示并返回 false
+  const valid = await formRef.value.validate().catch(() => false);
+  if (!valid) return;
+
+  loading.value = true;
+  try {
+    const resp = await api.post('/api/v1/{{apiPath}}', { ...form });
+    // 原理：{ ...form } 展开 reactive 对象为普通对象 { readerId: "xxx", isbn: "xxx" }
+
+    if (resp.code === 0) {
+      ElMessage.success('{{成功提示}}');
+      formRef.value.resetFields();            // 清空表单
+    } else {
+      ElMessage.error(resp.message);          // 后端返回的中文错误消息
+    }
+  } catch (err) {
+    ElMessage.error('网络异常，请稍后重试');
+  } finally {
+    loading.value = false;
+  }
+}
+</script>
+
+<template>
+  <el-container>
+    <el-header height="56px">
+      <h2>{{pageName}}</h2>
+    </el-header>
+    <el-main>
+      <!-- Element Plus 表单 — ref 用于表单校验，:model 绑定数据，:rules 绑定规则 -->
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" style="max-width: 500px;">
+        
+        <el-form-item label="字段标签" prop="fieldName">
+          <el-input v-model="form.fieldName" placeholder="请输入" />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" :loading="loading" @click="doSubmit">
+            {{提交按钮文字}}
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-main>
+  </el-container>
+</template>
+
+<style scoped>
+.el-header {
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-container);
+  border-bottom: 1px solid var(--color-border);
+}
+</style>

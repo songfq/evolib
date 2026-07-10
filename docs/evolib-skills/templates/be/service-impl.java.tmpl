@@ -1,0 +1,114 @@
+// 文件位置: module/{域}/service/impl/XxxServiceImpl.java
+// 使用方式: 复制此文件 → 替换 {{className}} / {{entityName}} / {{mapperName}}
+
+package com.evolib.module.{{moduleName}}.service.impl;
+
+import com.evolib.common.BusinessException;
+import com.evolib.common.ErrorCode;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Request;
+import com.evolib.module.{{moduleName}}.dto.{{className}}Response;
+import com.evolib.module.{{moduleName}}.entity.{{entityName}};
+import com.evolib.module.{{moduleName}}.mapper.{{mapperName}}Mapper;
+import com.evolib.module.{{moduleName}}.service.{{className}}Service;
+import com.evolib.module.audit.annotation.Auditable;
+import com.evolib.module.audit.service.AuditService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * {{功能描述}} Service 实现
+ * 
+ * 职责：
+ *   1. 业务逻辑判断（校验、计算、条件分支）
+ *   2. 事务管理（@Transactional）
+ *   3. 审计记录（@Auditable）
+ *   4. 应用层外键校验（替代数据库 FOREIGN KEY）
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class {{className}}ServiceImpl implements {{className}}Service {
+
+    private final {{mapperName}}Mapper {{instanceName}}Mapper;
+    private final AuditService auditService;
+
+    @Override
+    @Transactional
+    @Auditable(action = "CREATE")
+    public {{className}}Response create({{className}}Request request) {
+        // Step 1: 参数校验
+        if (request == null) {
+            throw new BusinessException(ErrorCode.INVALID_PARAM);
+        }
+
+        // Step 2: 业务逻辑校验（唯一性、存在性等）
+
+        // Step 3: 数据写入
+        {{entityName}} entity = new {{entityName}}();
+        // entity.setXxx(request.getXxx());  ← 将 DTO 字段映射到 Entity
+        {{instanceName}}Mapper.insert(entity);
+
+        // Step 4: 包装返回
+        return convertToResponse(entity);
+    }
+
+    @Override
+    public PageResult<{{className}}Response> search(String keyword, int page, int size) {
+        // TODO: 实现分页搜索逻辑
+        // 使用 MyBatis-Plus Page 对象:
+        // Page<{{entityName}}> p = new Page<>(page, size);
+        // LambdaQueryWrapper<{{entityName}}> wrapper = new LambdaQueryWrapper<>();
+        // wrapper.like({{entityName}}::getXxx, keyword);
+        // {{instanceName}}Mapper.selectPage(p, wrapper);
+        return null;
+    }
+
+    @Override
+    public {{className}}Response getById(String id) {
+        {{entityName}} entity = {{instanceName}}Mapper.selectById(id);
+        if (entity == null) {
+            throw new BusinessException(ErrorCode.READER_NOT_FOUND);  // 按需替换错误码
+        }
+        return convertToResponse(entity);
+    }
+
+    @Override
+    @Transactional
+    @Auditable(action = "UPDATE")
+    public {{className}}Response update(String id, {{className}}Request request) {
+        {{entityName}} entity = {{instanceName}}Mapper.selectById(id);
+        if (entity == null) {
+            throw new BusinessException(ErrorCode.READER_NOT_FOUND);
+        }
+        // entity.setXxx(request.getXxx());
+        {{instanceName}}Mapper.updateById(entity);
+        return convertToResponse(entity);
+    }
+
+    @Override
+    @Transactional
+    @Auditable(action = "DELETE")
+    public void delete(String id) {
+        {{entityName}} entity = {{instanceName}}Mapper.selectById(id);
+        if (entity == null) {
+            throw new BusinessException(ErrorCode.READER_NOT_FOUND);
+        }
+        {{instanceName}}Mapper.deleteById(id);
+    }
+
+    // ---- 私有工具方法 ----
+
+    /**
+     * Entity → Response DTO 转换
+     * 为什么要转换？
+     *   数据库表结构（Entity）和 API 响应（DTO）是两套模型。
+     *   表结构变时只改 Entity，API 兼容性靠 DTO 屏蔽——前端不受影响。
+     */
+    private {{className}}Response convertToResponse({{entityName}} entity) {
+        {{className}}Response response = new {{className}}Response();
+        // response.setXxx(entity.getYyy());
+        return response;
+    }
+}

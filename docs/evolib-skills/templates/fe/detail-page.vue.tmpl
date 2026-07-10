@@ -1,0 +1,48 @@
+<!--
+  模板：详情展示页（模板 C）
+  适用：P-03 图书详情
+  用法：复制此文件到 src/views/{角色}/XxxView.vue → 替换 {{pageName}} / {{apiPath}} / 字段
+-->
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';          // 获取 URL 路径参数
+import { api } from '@/utils/api';
+
+const route = useRoute();
+const data   = ref(null);
+const loading = ref(true);
+
+// 页面加载时自动获取数据
+// onMounted 是 Vue 3 的生命周期钩子 — 组件挂载到 DOM 后执行
+onMounted(async () => {
+  const id = route.params.id;                   // 从 URL /path/:id 中取出 id 值
+  
+  try {
+    const resp = await api.get('/api/v1/{{apiPath}}/' + id);
+    if (resp.code === 0) {
+      data.value = resp.data;
+    }
+  } finally {
+    loading.value = false;
+  }
+});
+</script>
+
+<template>
+  <el-container v-loading="loading">           <!-- 全容器 loading -->
+    <el-header height="56px">
+      <h2>{{pageName}}</h2>
+    </el-header>
+    <el-main>
+      <!-- Element Plus 描述列表 — 自动两列布局 -->
+      <el-descriptions v-if="data" :column="2" border>
+        <el-descriptions-item label="字段标签">{{ data.field }}</el-descriptions-item>
+        <!-- TODO: 按 SRS §8 页面描述补充字段 -->
+      </el-descriptions>
+
+      <!-- 返回按钮 — $router.back() 相当于浏览器后退 -->
+      <el-button style="margin-top: 16px;" @click="$router.back()">返回</el-button>
+    </el-main>
+  </el-container>
+</template>

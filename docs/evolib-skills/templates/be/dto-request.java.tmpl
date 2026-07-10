@@ -1,0 +1,23 @@
+// 文件位置: module/{域}/dto/XxxRequest.java
+// 使用方式: 复制此文件 → 替换 {{className}} / 字段列表
+
+package com.evolib.module.{{moduleName}}.dto;
+
+import lombok.Data;
+import javax.validation.constraints.NotBlank;
+
+/**
+ * {{接口名}} 请求 DTO
+ * 
+ * 字段上的 @NotBlank / @NotNull 注解 — JSR-303 Bean Validation
+ *   Controller 方法参数前加 @Valid 时自动触发校验
+ *   校验失败 → GlobalExceptionHandler 返回 4007 错误码
+ */
+@Data
+public class {{className}}Request {
+
+    @NotBlank(message = "{{字段提示}}不能为空")
+    private String xxx;
+
+    // TODO: 按 SRS 的「输入」列补充字段 + 校验注解
+}

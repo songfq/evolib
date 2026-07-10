@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "EvoLib API v1.0",
+    "description": "EvoLib 图书馆管理 MVP 系统 — 11 个 API 端点集合。使用方法：导入 Postman → 设置 baseUrl 变量 → 先调 login → 其他接口自动用 token",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1" },
+    { "key": "token",   "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "认证",
+      "item": [
+        {
+          "name": "登录 [API-00]",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"readerId\":\"R001\",\"password\":\"123456\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "图书检索",
+      "item": [
+        {
+          "name": "搜索图书 [API-01]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/books/search?keyword=Java&type=title&page=1&size=10",
+              "query": [
+                { "key": "keyword", "value": "Java" },
+                { "key": "type", "value": "title" },
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "图书详情 [API-02]",
+          "request": { "method": "GET", "url": "{{baseUrl}}/books/978-7-111-1" }
+        }
+      ]
+    },
+    {
+      "name": "借阅管理",
+      "item": [
+        {
+          "name": "借书 [API-03]",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/borrow-records",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"readerId\":\"R001\",\"isbn\":\"978-7-111-1\"}" }
+          }
+        },
+        {
+          "name": "还书 [API-04]",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/borrow-records/1/return",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"isbn\":\"978-7-111-1\",\"readerId\":\"R001\"}" }
+          }
+        },
+        {
+          "name": "读者在借清单 [API-05]",
+          "request": { "method": "GET", "url": "{{baseUrl}}/readers/R001/borrows" }
+        }
+      ]
+    },
+    {
+      "name": "读者管理",
+      "item": [
+        {
+          "name": "注册读者 [API-06]",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/readers",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"readerId\":\"R004\",\"name\":\"赵六\",\"phone\":\"13800004444\"}" }
+          }
+        },
+        {
+          "name": "修改手机号 [API-07]",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/readers/R004/phone",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"phone\":\"13900005555\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "管理员",
+      "item": [
+        {
+          "name": "上架图书 [API-09]",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/admin/books",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"isbn\":\"978-7-302-1\",\"title\":\"算法导论\",\"author\":\"Cormen\",\"totalStock\":5,\"shelfLocation\":\"B区-1排-2架\"}" }
+          }
+        },
+        {
+          "name": "下架图书 [API-10]",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/admin/books/978-7-302-1" }
+        },
+        {
+          "name": "重置密码 [API-08]",
+          "request": { "method": "PUT", "url": "{{baseUrl}}/admin/readers/R004/reset-password" }
+        }
+      ]
+    }
+  ]
+}

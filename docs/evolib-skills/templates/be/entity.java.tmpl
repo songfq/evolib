@@ -1,0 +1,41 @@
+// 文件位置: module/{域}/entity/Xxx.java
+// 使用方式: 复制此文件 → 替换 {{className}} / {{tableName}} / 字段列表
+
+package com.evolib.module.{{moduleName}}.entity;
+
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+/**
+ * {{表中文名}} 实体类
+ * 
+ * MyBatis-Plus 自动映射规则：
+ *   数据库列名（下划线）→ Java 字段名（驼峰）
+ *   例：reader_id → readerId, created_at → createdAt
+ * 
+ * 不需要写 @TableField，MyBatis-Plus 自动处理下划线 ↔ 驼峰映射。
+ * 仅当 Java 字段名与数据库列名不一致时才需要 @TableField("column_name")。
+ */
+@Data
+@TableName("{{tableName}}")
+public class {{className}} {
+
+    /** 主键 — 自增 ID */
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    /** 创建时间 — 数据库自动填充，Java 只读 */
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createdAt;
+
+    /** 更新时间 — 数据库自动填充，Java 只读 */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedAt;
+
+    // TODO: 按数据库字段补充属性
+    // private String xxx;
+    // private Integer yyy;
+    // private Boolean isActive;
+}
