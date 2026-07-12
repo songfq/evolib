@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/evolib
+    username: evolib
+    password: ${DB_PASSWORD}
+
+logging:
+  level:
+    com.evolib: INFO
+    org.springframework.security: WARN

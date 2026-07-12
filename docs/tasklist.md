@@ -35,6 +35,8 @@
 | 后端任务 | 24 |
 | 前端任务 | 19 |
 | 测试 & 部署任务 | 7 |
+| **已完成** | **7** |
+| **待完成** | **43** |
 
 ---
 
@@ -44,10 +46,10 @@
 
 | ID | 任务 | 关联 REQ | 依赖 | 产出物 / 验收标准 |
 | --- | --- | --- | --- | --- |
-| **T-INF-01** | **初始化 Spring Boot 2.7.18 项目** | — | — | `evolib-backend/` 目录、`pom.xml` 含 Spring Boot 2.7.18 + MyBatis-Plus 3.5.5 + jjwt 0.11.5 + PostgreSQL 驱动依赖；`mvn compile` 成功 |
-| **T-INF-02** | **初始化 Vue 3 + Vite 项目** | — | — | `evolib-frontend/` 目录、`package.json` 含 vue@3、vue-router@4、pinia@2、axios@1、vite@5；`npm install && npm run dev` 成功 |
-| **T-INF-03** | **配置 Vite 代理与构建输出** | — | T-INF-02 | `vite.config.js` 含：`@` 别名、`/api` 代理到 `process.env.VITE_API_TARGET`、`outDir` 用 `path.resolve(__dirname, ...)` 输出到后端 `static/` |
-| **T-INF-04** | **配置 application.yml** | — | T-INF-01 | PostgreSQL 连接、JWT 配置（secret/env、8h）、借阅参数（max_days=30、max_count=3、默认密码规则）；开发/生产环境 profile 分离 |
+| **T-INF-01** | **✅ 初始化 Spring Boot 2.7.18 项目** | — | — | `evolib-backend/` 目录、`pom.xml` 含 Spring Boot 2.7.18 + MyBatis-Plus 3.5.5 + jjwt 0.11.5 + PostgreSQL 驱动依赖；`mvn compile` 成功 |
+| **T-INF-02** | **✅ 初始化 Vue 3 + Vite 项目** | — | — | `evolib-frontend/` 目录、`package.json` 含 vue@3、vue-router@4、pinia@2、axios@1、vite@5；`npm install && npm run dev` 成功 |
+| **T-INF-03** | **✅ 配置 Vite 代理与构建输出** | — | T-INF-02 | `vite.config.js` 含：`@` 别名、`/api` 代理到 `process.env.VITE_API_TARGET`、`outDir` 用 `path.resolve(__dirname, ...)` 输出到后端 `static/` |
+| **T-INF-04** | **✅ 配置 application.yml** | — | T-INF-01 | PostgreSQL 连接、JWT 配置（secret/env、8h）、借阅参数（max_days=30、max_count=3、默认密码规则）；开发/生产环境 profile 分离 |
 
 ---
 
@@ -57,9 +59,9 @@
 
 | ID | 任务 | 关联 REQ | 依赖 | 产出物 / 验收标准 |
 | --- | --- | --- | --- | --- |
-| **T-DB-01** | **执行建库建表 DDL** | — | — | PostgreSQL 数据库 `evolib` 创建；`books`、`readers`、`borrow_records`、`audit_logs` 四张表创建；表结构与架构文档 6.1~6.4 节一致，无一外键约束 |
-| **T-DB-02** | **创建索引** | NFR-04 | T-DB-01 | 架构文档 6 节列出的所有索引均已创建 |
-| **T-DB-03** | **插入种子数据** | — | T-DB-01 | 测试读者（ROLE_READER: R001/张三，ROLE_CIRCULATION: R002/李四，ROLE_ADMIN: R003/王五）+ 5 本测试图书；密码为 BCrypt 加密后的手机号后六位 |
+| **T-DB-01** | **✅ 执行建库建表 DDL** | — | — | PostgreSQL 数据库 `evolib` 创建；`books`、`readers`、`borrow_records`、`audit_logs` 四张表创建；表结构与架构文档 6.1~6.4 节一致，无一外键约束 |
+| **T-DB-02** | **✅ 创建索引** | NFR-04 | T-DB-01 | 架构文档 6 节列出的所有索引均已创建 |
+| **T-DB-03** | **✅ 插入种子数据** | — | T-DB-01 | 测试读者（ROLE_READER: R001/张三，ROLE_CIRCULATION: R002/李四，ROLE_ADMIN: R003/王五）+ 5 本测试图书；密码为 BCrypt 加密后的手机号后六位 |
 
 ---
 

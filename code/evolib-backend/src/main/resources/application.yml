@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/evolib
+    username: postgres
+    password: ${DB_PASSWORD:evolib123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-field: is_active
+      logic-delete-value: false
+      logic-not-delete-value: true
+
+jwt:
+  secret: ${JWT_SECRET:evolib-jwt-secret-key-change-in-production}
+  expiration: 28800000
+
+library:
+  max:
+    borrow:
+      days: 30
+      count: 3
+  default:
+    password: phone-last-6

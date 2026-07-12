@@ -1,2 +1,6 @@
 .workbuddy/memory/2026-07-09.md
 .workbuddy/memory/2026-07-10.md
+
+/code/evolib-frontend/node_modules/
+/code/evolib-backend/target
+/.trae/
