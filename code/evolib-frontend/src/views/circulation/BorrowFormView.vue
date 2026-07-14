@@ -2,25 +2,20 @@
   <AppLayout>
     <div class="page-container">
       <div class="page-header">
-        <h2 class="page-title">注册读者</h2>
+        <h2 class="page-title">新增借书</h2>
+        <EvoButton @click="goBack">返回列表</EvoButton>
       </div>
       <EvoForm>
         <EvoFormItem label="读者ID" required>
-          <EvoInput v-model="readerId" placeholder="请输入读者ID" />
+          <EvoInput v-model="readerId" placeholder="请输入读者借阅证号" />
         </EvoFormItem>
-        <EvoFormItem label="姓名" required>
-          <EvoInput v-model="name" placeholder="请输入姓名" />
-        </EvoFormItem>
-        <EvoFormItem label="手机号" required>
-          <EvoInput v-model="phone" placeholder="请输入手机号" />
-        </EvoFormItem>
-        <EvoFormItem label="密码" required>
-          <EvoInput v-model="password" placeholder="请输入密码" />
+        <EvoFormItem label="图书ISBN" required>
+          <EvoInput v-model="isbn" placeholder="请输入图书ISBN" />
         </EvoFormItem>
         <template #footer>
           <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
           <span v-if="successMsg" class="success-text">{{ successMsg }}</span>
-          <EvoButton type="primary" :loading="loading" @click="doRegister">注册</EvoButton>
+          <EvoButton type="primary" :loading="loading" @click="doBorrow">确认借书</EvoButton>
         </template>
       </EvoForm>
     </div>
@@ -29,6 +24,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { api } from '@/utils/api';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import EvoInput from '@/components/common/EvoInput.vue';
@@ -36,35 +32,33 @@ import EvoButton from '@/components/common/EvoButton.vue';
 import EvoForm from '@/components/common/EvoForm.vue';
 import EvoFormItem from '@/components/common/EvoFormItem.vue';
 
+const router = useRouter();
 const readerId = ref('');
-const name = ref('');
-const phone = ref('');
-const password = ref('');
+const isbn = ref('');
 const loading = ref(false);
 const errorMsg = ref('');
 const successMsg = ref('');
 
-async function doRegister() {
+function goBack() {
+  router.push('/circulation/borrow');
+}
+
+async function doBorrow() {
   errorMsg.value = '';
   successMsg.value = '';
-  if (!readerId.value.trim() || !name.value.trim() || !phone.value.trim() || !password.value.trim()) {
-    errorMsg.value = '请填写完整信息';
+  if (!readerId.value.trim() || !isbn.value.trim()) {
+    errorMsg.value = '请输入读者ID和图书ISBN';
     return;
   }
   loading.value = true;
   try {
-    const resp = await api.post('/readers', {
+    const resp = await api.post('/borrow-records', {
       readerId: readerId.value.trim(),
-      name: name.value.trim(),
-      phone: phone.value.trim(),
-      password: password.value,
+      isbn: isbn.value.trim(),
     });
     if (resp.code === 0) {
-      successMsg.value = '注册成功';
-      readerId.value = '';
-      name.value = '';
-      phone.value = '';
-      password.value = '';
+      successMsg.value = '借书成功';
+      isbn.value = '';
     } else {
       errorMsg.value = resp.message;
     }

@@ -1,36 +1,37 @@
 <template>
   <AppLayout>
     <div class="page-container">
-      <h2 class="page-title">借书操作</h2>
-      <div class="borrow-form">
-        <EvoInput v-model="readerId" placeholder="请输入读者借阅证号" label="读者ID" />
-        <EvoInput v-model="isbn" placeholder="请输入图书ISBN" label="图书ISBN" />
-        <EvoButton type="primary" :loading="loading" @click="doBorrow">确认借书</EvoButton>
+      <div class="page-header">
+        <h2 class="page-title">借书操作</h2>
+        <EvoButton type="primary" @click="goToBorrow">新增借书</EvoButton>
       </div>
-      <div v-if="errorMsg" class="error-text">{{ errorMsg }}</div>
-      <div v-if="successMsg" class="success-text">{{ successMsg }}</div>
-      <div v-if="borrowList.length > 0" class="borrow-list">
-        <h3>当前在借清单（{{ readerId }}）</h3>
-        <EvoTable :columns="columns" :data="borrowList" rowKey="id" />
+      <div class="search-card">
+        <div class="search-form">
+          <EvoInput v-model="readerId" placeholder="请输入读者ID" label="读者ID" />
+          <EvoButton type="primary" @click="loadBorrows">查询</EvoButton>
+        </div>
+        <div v-if="errorMsg" class="error-text">{{ errorMsg }}</div>
       </div>
+      <EvoTable :columns="columns" :data="borrowList" rowKey="id" :empty-text="showEmptyText ? '暂无在借记录' : ''" />
     </div>
   </AppLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { api } from '@/utils/api';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import EvoInput from '@/components/common/EvoInput.vue';
 import EvoButton from '@/components/common/EvoButton.vue';
 import EvoTable from '@/components/common/EvoTable.vue';
 
+const router = useRouter();
 const readerId = ref('');
-const isbn = ref('');
-const loading = ref(false);
 const errorMsg = ref('');
-const successMsg = ref('');
 const borrowList = ref([]);
+
+const showEmptyText = computed(() => readerId.value.trim() && borrowList.value.length === 0 && !errorMsg.value);
 
 const columns = [
   { key: 'title', title: '书名', width: 'auto' },
@@ -39,36 +40,28 @@ const columns = [
   { key: 'dueDate', title: '应还日期', width: '120px' },
 ];
 
-async function doBorrow() {
+function goToBorrow() {
+  router.push('/circulation/borrow/form');
+}
+
+async function loadBorrows() {
   errorMsg.value = '';
-  successMsg.value = '';
-  if (!readerId.value.trim() || !isbn.value.trim()) {
-    errorMsg.value = '请输入读者ID和图书ISBN';
+  if (!readerId.value.trim()) {
+    errorMsg.value = '请输入读者ID';
     return;
   }
-  loading.value = true;
   try {
-    const resp = await api.post('/borrow-records', {
-      readerId: readerId.value.trim(),
-      isbn: isbn.value.trim(),
-    });
+    const resp = await api.get(`/readers/${readerId.value.trim()}/borrows`);
     if (resp.code === 0) {
-      successMsg.value = '借书成功';
-      isbn.value = '';
-      const listResp = await api.get(`/readers/${readerId.value.trim()}/borrows`);
-      borrowList.value = listResp.data || [];
+      borrowList.value = resp.data?.records || [];
     } else {
       errorMsg.value = resp.message;
     }
   } catch {
     errorMsg.value = '网络异常，请稍后重试';
-  } finally {
-    loading.value = false;
   }
 }
 </script>
 
 <style scoped>
-.borrow-form { display: flex; gap: var(--spacing-md); align-items: flex-end; margin-bottom: var(--spacing-md); }
-.borrow-list { margin-top: var(--spacing-lg); }
 </style>

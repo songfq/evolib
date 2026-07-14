@@ -8,7 +8,7 @@ import com.evolib.module.borrow.dto.ReturnResponse;
 import com.evolib.module.borrow.service.BorrowService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,7 +22,6 @@ public class BorrowController {
     private final BorrowService borrowService;
     
     @PostMapping("/borrow-records")
-    @PreAuthorize("hasRole('ROLE_CIRCULATION')")
     public Result<BorrowResponse> borrow(@RequestBody @Valid BorrowRequest request) {
         log.info("借书请求: readerId={}, isbn={}", request.getReaderId(), request.getIsbn());
         BorrowResponse response = borrowService.borrow(request);
@@ -30,7 +29,6 @@ public class BorrowController {
     }
     
     @PutMapping("/borrow-records/{recordId}/return")
-    @PreAuthorize("hasRole('ROLE_CIRCULATION')")
     public Result<ReturnResponse> returnBook(@PathVariable Long recordId) {
         log.info("还书请求: recordId={}", recordId);
         ReturnResponse response = borrowService.returnBook(recordId);
@@ -38,7 +36,6 @@ public class BorrowController {
     }
     
     @GetMapping("/readers/{readerId}/borrows")
-    @PreAuthorize("hasRole('ROLE_CIRCULATION')")
     public Result<IPage<Object>> getBorrows(
             @PathVariable String readerId,
             @RequestParam(defaultValue = "1") Integer pageNum,

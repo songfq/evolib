@@ -1,7 +1,8 @@
-DROP TABLE IF EXISTS audit_logs CASCADE;
+/**DROP TABLE IF EXISTS audit_logs CASCADE;
 DROP TABLE IF EXISTS borrow_records CASCADE;
 DROP TABLE IF EXISTS readers CASCADE;
 DROP TABLE IF EXISTS books CASCADE;
+DROP TABLE IF EXISTS t_org_tags CASCADE;**/
 
 CREATE TABLE IF NOT EXISTS books (
     isbn             VARCHAR(20)   PRIMARY KEY,
@@ -61,3 +62,16 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 
 CREATE INDEX IF NOT EXISTS idx_audit_created  ON audit_logs (created_at);
 CREATE INDEX IF NOT EXISTS idx_audit_operator ON audit_logs (operator_id);
+
+-- schema.sql 中添加
+CREATE TABLE IF NOT EXISTS t_org_tags (
+    id           BIGSERIAL    PRIMARY KEY,
+    number       VARCHAR(50),
+    name         VARCHAR(100) NOT NULL,
+    state        VARCHAR(20)  DEFAULT '0',
+    createTime  TIMESTAMP    NOT NULL DEFAULT NOW(),
+    modifyTime  TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_org_tags_number  ON t_org_tags (number);
+CREATE INDEX IF NOT EXISTS idx_org_tags_name ON t_org_tags (name);

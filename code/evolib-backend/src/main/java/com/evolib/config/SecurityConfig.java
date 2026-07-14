@@ -33,10 +33,6 @@ public class SecurityConfig {
             .antMatchers("/").permitAll()
             .antMatchers("/api/v1/auth/login").permitAll()
             .antMatchers("/api/health").permitAll()
-            .antMatchers("/api/v1/books/**").hasRole("READER")
-            .antMatchers("/api/v1/borrow-records/**").hasRole("CIRCULATION")
-            .antMatchers("/api/v1/readers/**").hasRole("CIRCULATION")
-            .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -31,7 +31,7 @@ defineEmits(['update:modelValue']);
   height: var(--input-height);
   padding: 0 var(--spacing-md);
   border: 1px solid var(--color-border-input);
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-sm);
   font-size: var(--font-size-base);
   color: var(--color-text);
   background: var(--color-bg-input);

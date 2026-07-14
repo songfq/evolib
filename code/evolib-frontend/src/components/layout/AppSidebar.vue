@@ -1,27 +1,20 @@
 <template>
   <aside class="app-sidebar">
     <nav class="app-sidebar__nav">
-      <template v-if="auth.hasRole('ROLE_READER')">
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'BookSearch' }]" to="/reader/search">图书检索</router-link>
-      </template>
-      <template v-if="auth.hasRole('ROLE_CIRCULATION')">
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'Borrow' }]" to="/circulation/borrow">借书操作</router-link>
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'Return' }]" to="/circulation/return">还书操作</router-link>
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'Register' }]" to="/circulation/register">注册读者</router-link>
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'Borrows' }]" to="/circulation/borrows">在借清单</router-link>
-      </template>
-      <template v-if="auth.hasRole('ROLE_ADMIN')">
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'AddBook' }]" to="/admin/add-book">上架图书</router-link>
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'RemoveBook' }]" to="/admin/remove-book">下架图书</router-link>
-        <router-link :class="['app-sidebar__item', { active: $route.name === 'ResetPassword' }]" to="/admin/reset-password">重置密码</router-link>
-      </template>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'BookSearch' }]" to="/reader/search">图书检索</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'Borrow' }]" to="/circulation/borrow">借书操作</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'Return' }]" to="/circulation/return">还书操作</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'Register' }]" to="/circulation/register">注册读者</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'Borrows' }]" to="/circulation/borrows">在借清单</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'AddBook' }]" to="/admin/add-book">上架图书</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'RemoveBook' }]" to="/admin/remove-book">下架图书</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'orgtagList' }]" to="/orgtag/list">组织标签</router-link>
+      <router-link :class="['app-sidebar__item', { active: $route.name === 'ResetPassword' }]" to="/admin/reset-password">重置密码</router-link>
     </nav>
   </aside>
 </template>
 
 <script setup>
-import { useAuthStore } from '@/stores/auth';
-const auth = useAuthStore();
 </script>
 
 <style scoped>

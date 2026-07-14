@@ -17,11 +17,32 @@ html, body {
   min-height: calc(100vh - var(--header-height));
 }
 
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
 .page-title {
   font-size: var(--font-size-xl);
   color: var(--color-text);
-  margin-bottom: var(--spacing-lg);
   font-weight: 600;
+}
+
+.search-card {
+  background: var(--color-bg-container);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-form {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-end;
 }
 
 .form-group {

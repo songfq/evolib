@@ -5,7 +5,7 @@ import com.evolib.module.admin.service.AdminService;
 import com.evolib.module.book.dto.BookDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +17,6 @@ public class AdminController {
     private final AdminService adminService;
     
     @PostMapping("/books")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result<BookDTO> addBook(@RequestBody BookDTO bookDTO) {
         log.info("上架图书: isbn={}, title={}", bookDTO.getIsbn(), bookDTO.getTitle());
         BookDTO result = adminService.addBook(bookDTO);
@@ -25,7 +24,6 @@ public class AdminController {
     }
     
     @DeleteMapping("/books/{isbn}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result<Void> removeBook(@PathVariable String isbn) {
         log.info("下架图书: isbn={}", isbn);
         adminService.removeBook(isbn);
@@ -33,7 +31,6 @@ public class AdminController {
     }
     
     @PutMapping("/readers/{readerId}/reset-password")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Result<Void> resetPassword(@PathVariable String readerId) {
         log.info("重置密码: readerId={}", readerId);
         adminService.resetPassword(readerId);

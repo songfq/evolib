@@ -6,7 +6,7 @@ import com.evolib.module.reader.dto.ReaderDTO;
 import com.evolib.module.reader.service.ReaderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,7 +21,6 @@ public class ReaderController {
     private final ReaderService readerService;
     
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_CIRCULATION')")
     public Result<ReaderDTO> register(@RequestBody @Valid RegisterRequest request) {
         log.info("注册读者: readerId={}, name={}", request.getReaderId(), request.getName());
         ReaderDTO reader = readerService.register(request);
@@ -29,7 +28,6 @@ public class ReaderController {
     }
     
     @PutMapping("/{readerId}/phone")
-    @PreAuthorize("hasRole('ROLE_CIRCULATION')")
     public Result<Void> updatePhone(
             @PathVariable String readerId,
             @RequestBody @Valid @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确") String phone) {

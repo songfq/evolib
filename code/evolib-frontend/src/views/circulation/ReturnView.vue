@@ -1,17 +1,21 @@
 <template>
   <AppLayout>
     <div class="page-container">
-      <h2 class="page-title">还书操作</h2>
-      <div class="return-form">
-        <EvoInput v-model="readerId" placeholder="请输入读者借阅证号" label="读者ID" />
-        <EvoButton type="primary" :loading="loading" @click="loadBorrows">查询在借清单</EvoButton>
+      <div class="page-header">
+        <h2 class="page-title">还书操作</h2>
       </div>
-      <div v-if="errorMsg" class="error-text">{{ errorMsg }}</div>
-      <div v-if="borrowList.length > 0" class="borrow-list">
+      <div class="search-card">
+        <div class="search-form">
+          <EvoInput v-model="readerId" placeholder="请输入读者ID" label="读者ID" />
+          <EvoButton type="primary" :loading="loading" @click="loadBorrows">查询在借清单</EvoButton>
+        </div>
+        <div v-if="errorMsg" class="error-text">{{ errorMsg }}</div>
+      </div>
+      <div class="borrow-list">
         <h3>在借清单（{{ readerId }}）</h3>
-        <EvoTable :columns="columns" :data="borrowList" rowKey="id">
+        <EvoTable :columns="columns" :data="borrowList" rowKey="id" :empty-text="showEmptyText ? '暂无记录' : ''">
           <template #cell-action="{ row }">
-            <EvoButton type="primary" @click="doReturn(row.id)">还书</EvoButton>
+            <EvoButton type="primary" size="small" @click="doReturn(row.id)">还书</EvoButton>
           </template>
         </EvoTable>
       </div>
@@ -50,7 +54,7 @@ async function loadBorrows() {
   try {
     const resp = await api.get(`/readers/${readerId.value.trim()}/borrows`);
     if (resp.code === 0) {
-      borrowList.value = resp.data || [];
+      borrowList.value = resp.data?.records || [];
     } else {
       errorMsg.value = resp.message;
     }
@@ -77,6 +81,4 @@ async function doReturn(recordId) {
 </script>
 
 <style scoped>
-.return-form { display: flex; gap: var(--spacing-md); align-items: flex-end; margin-bottom: var(--spacing-md); }
-.borrow-list { margin-top: var(--spacing-lg); }
 </style>

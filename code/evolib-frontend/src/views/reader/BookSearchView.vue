@@ -1,10 +1,14 @@
 <template>
   <AppLayout>
     <div class="page-container">
-      <h2 class="page-title">图书检索</h2>
-      <div class="search-form">
-        <EvoInput v-model="keyword" placeholder="请输入书名或作者" />
-        <EvoButton type="primary" @click="handleSearch">搜索</EvoButton>
+      <div class="page-header">
+        <h2 class="page-title">图书检索</h2>
+      </div>
+      <div class="search-card">
+        <div class="search-form">
+          <EvoInput v-model="keyword" placeholder="请输入书名或作者" />
+          <EvoButton type="primary" @click="handleSearch">搜索</EvoButton>
+        </div>
       </div>
       <EvoTable :columns="columns" :data="bookList" rowKey="isbn">
         <template #cell-isbn="{ row }">
@@ -61,6 +65,5 @@ loadData();
 </script>
 
 <style scoped>
-.search-form { display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
-.search-form .evo-input { flex: 1; max-width: 400px; }
+.search-form .evo-input-wrapper { flex: 1; max-width: 400px; }
 </style>

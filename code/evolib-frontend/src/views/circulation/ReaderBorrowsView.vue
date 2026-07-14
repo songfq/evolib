@@ -1,12 +1,16 @@
 <template>
   <AppLayout>
     <div class="page-container">
-      <h2 class="page-title">在借清单</h2>
-      <div class="search-form">
-        <EvoInput v-model="readerId" placeholder="请输入读者ID" label="读者ID" />
-        <EvoButton type="primary" @click="loadBorrows">查询</EvoButton>
+      <div class="page-header">
+        <h2 class="page-title">在借清单</h2>
       </div>
-      <div v-if="errorMsg" class="error-text">{{ errorMsg }}</div>
+      <div class="search-card">
+        <div class="search-form">
+          <EvoInput v-model="readerId" placeholder="请输入读者ID" label="读者ID" />
+          <EvoButton type="primary" @click="loadBorrows">查询</EvoButton>
+        </div>
+        <div v-if="errorMsg" class="error-text">{{ errorMsg }}</div>
+      </div>
       <EvoTable v-if="borrowList.length > 0" :columns="columns" :data="borrowList" rowKey="id" />
     </div>
   </AppLayout>
@@ -40,7 +44,7 @@ async function loadBorrows() {
   try {
     const resp = await api.get(`/readers/${readerId.value.trim()}/borrows`);
     if (resp.code === 0) {
-      borrowList.value = resp.data || [];
+      borrowList.value = resp.data?.records || [];
     } else {
       errorMsg.value = resp.message;
     }
@@ -51,5 +55,4 @@ async function loadBorrows() {
 </script>
 
 <style scoped>
-.search-form { display: flex; gap: var(--spacing-md); align-items: flex-end; margin-bottom: var(--spacing-lg); }
 </style>

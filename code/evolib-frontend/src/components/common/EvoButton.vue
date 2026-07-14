@@ -1,5 +1,5 @@
 <template>
-  <button :class="['evo-btn', `evo-btn--${type}`]" :disabled="disabled || loading" @click="$emit('click')">
+  <button :class="['evo-btn', `evo-btn--${type}`, `evo-btn--${size}`]" :disabled="disabled || loading" @click="$emit('click')">
     <span v-if="loading" class="evo-btn__spinner"></span>
     <slot />
   </button>
@@ -8,6 +8,7 @@
 <script setup>
 defineProps({
   type: { type: String, default: 'primary' },
+  size: { type: String, default: 'default' },
   disabled: { type: Boolean, default: false },
   loading: { type: Boolean, default: false },
 });
@@ -18,14 +19,20 @@ defineEmits(['click']);
 .evo-btn {
   height: var(--btn-height);
   padding: 0 var(--spacing-md);
-  border-radius: var(--border-radius);
+  border-radius: var(--border-radius-sm);
   font-size: var(--font-size-base);
   cursor: pointer;
   transition: background 0.2s;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   border: 1px solid transparent;
+}
+.evo-btn--small {
+  height: var(--btn-height-sm);
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-size-sm);
 }
 .evo-btn--primary {
   background: var(--color-primary);

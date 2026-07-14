@@ -1,14 +1,22 @@
 <template>
   <AppLayout>
     <div class="page-container">
-      <h2 class="page-title">重置密码</h2>
-      <div class="reset-password-form">
-        <EvoInput v-model="readerId" placeholder="请输入读者ID" label="读者ID" />
-        <EvoInput v-model="newPassword" placeholder="请输入新密码" label="新密码" />
-        <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
-        <span v-if="successMsg" class="success-text">{{ successMsg }}</span>
-        <EvoButton type="primary" :loading="loading" @click="doReset">重置密码</EvoButton>
+      <div class="page-header">
+        <h2 class="page-title">重置密码</h2>
       </div>
+      <EvoForm>
+        <EvoFormItem label="读者ID" required>
+          <EvoInput v-model="readerId" placeholder="请输入读者ID" />
+        </EvoFormItem>
+        <EvoFormItem label="新密码" required>
+          <EvoInput v-model="newPassword" placeholder="请输入新密码" />
+        </EvoFormItem>
+        <template #footer>
+          <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
+          <span v-if="successMsg" class="success-text">{{ successMsg }}</span>
+          <EvoButton type="primary" :loading="loading" @click="doReset">重置密码</EvoButton>
+        </template>
+      </EvoForm>
     </div>
   </AppLayout>
 </template>
@@ -19,6 +27,8 @@ import { api } from '@/utils/api';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import EvoInput from '@/components/common/EvoInput.vue';
 import EvoButton from '@/components/common/EvoButton.vue';
+import EvoForm from '@/components/common/EvoForm.vue';
+import EvoFormItem from '@/components/common/EvoFormItem.vue';
 
 const readerId = ref('');
 const newPassword = ref('');
@@ -54,5 +64,4 @@ async function doReset() {
 </script>
 
 <style scoped>
-.reset-password-form { max-width: 400px; }
 </style>

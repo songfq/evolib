@@ -1,18 +1,34 @@
 <template>
   <AppLayout>
     <div class="page-container">
-      <h2 class="page-title">上架图书</h2>
-      <div class="add-book-form">
-        <EvoInput v-model="isbn" placeholder="请输入ISBN" label="ISBN" />
-        <EvoInput v-model="title" placeholder="请输入书名" label="书名" />
-        <EvoInput v-model="author" placeholder="请输入作者" label="作者" />
-        <EvoInput v-model="totalStock" placeholder="请输入总库存" label="总库存" />
-        <EvoInput v-model="shelfLocation" placeholder="请输入馆藏位置" label="馆藏位置" />
-        <EvoInput v-model="description" placeholder="请输入简介" label="简介" />
-        <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
-        <span v-if="successMsg" class="success-text">{{ successMsg }}</span>
-        <EvoButton type="primary" :loading="loading" @click="doAdd">上架</EvoButton>
+      <div class="page-header">
+        <h2 class="page-title">上架图书</h2>
       </div>
+      <EvoForm>
+        <EvoFormItem label="ISBN" required>
+          <EvoInput v-model="isbn" placeholder="请输入ISBN" />
+        </EvoFormItem>
+        <EvoFormItem label="书名" required>
+          <EvoInput v-model="title" placeholder="请输入书名" />
+        </EvoFormItem>
+        <EvoFormItem label="作者" required>
+          <EvoInput v-model="author" placeholder="请输入作者" />
+        </EvoFormItem>
+        <EvoFormItem label="总库存" required>
+          <EvoInput v-model="totalStock" placeholder="请输入总库存" />
+        </EvoFormItem>
+        <EvoFormItem label="馆藏位置">
+          <EvoInput v-model="shelfLocation" placeholder="请输入馆藏位置" />
+        </EvoFormItem>
+        <EvoFormItem label="简介">
+          <EvoInput v-model="description" placeholder="请输入简介" />
+        </EvoFormItem>
+        <template #footer>
+          <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
+          <span v-if="successMsg" class="success-text">{{ successMsg }}</span>
+          <EvoButton type="primary" :loading="loading" @click="doAdd">上架</EvoButton>
+        </template>
+      </EvoForm>
     </div>
   </AppLayout>
 </template>
@@ -23,6 +39,8 @@ import { api } from '@/utils/api';
 import AppLayout from '@/components/layout/AppLayout.vue';
 import EvoInput from '@/components/common/EvoInput.vue';
 import EvoButton from '@/components/common/EvoButton.vue';
+import EvoForm from '@/components/common/EvoForm.vue';
+import EvoFormItem from '@/components/common/EvoFormItem.vue';
 
 const isbn = ref('');
 const title = ref('');
@@ -72,5 +90,4 @@ async function doAdd() {
 </script>
 
 <style scoped>
-.add-book-form { max-width: 500px; }
 </style>
